@@ -40,6 +40,9 @@ The logs are also printed to the terminal through `tee`, so existing interactive
 | Script | Purpose | Primary side effects | Notes |
 | --- | --- | --- | --- |
 | `services/cygnus/build.sh` | Loads `.env`, then runs `docker-compose down -v` and `docker-compose up --build -d`. | Rebuilds and starts Cygnus Docker services, deleting volumes first. | Requires `.env`. Uses legacy `docker-compose`. |
+| `services/cygnus/rinstall.sh` | Performs a clean dependency reinstall for Cygnus. | Deletes `node_modules` and runs `npm ci` when `package-lock.json` exists, otherwise `npm install`. | Use when the local dependency tree is corrupted or after large dependency changes. |
+| `services/cygnus/runinstall.sh` | Ensures dependencies are installed/refreshed, then starts the React app. | May install/update `node_modules`, then runs `npm start`. | Forwards remaining arguments to `npm start` after the logging flag is stripped. |
+| `services/cygnus/refreshinstall.sh` | Checks and reconciles installed dependencies against `package.json` and `package-lock.json`. | Runs `npm install`, may update `package-lock.json`, and prints top-level dependency state. | Use after dependency manifest edits to align local install state. |
 | `services/cygnus/sync.sh` | Syncs Cygnus `main` into the `deploy` branch of `https://github.com/iamjpsonkar/cygnus.git`. | Fetches/pulls `main`, switches to `deploy`, merges `main`, pushes `deploy`, then switches back to `main`. | Requires clean working tree and must be run from `main`. |
 
 ## Centaurus Scripts
@@ -51,6 +54,9 @@ The logs are also printed to the terminal through `tee`, so existing interactive
 | `services/centaurus/pause_setup.sh` | Stops running Docker Compose containers without deleting them. | Stops containers. | Use for non-destructive pause. |
 | `services/centaurus/delete_setup.sh` | Runs `docker-compose down --volumes --remove-orphans`. | Removes containers, networks, volumes, and orphans for Centaurus Compose project. | Destructive for local data volumes. |
 | `services/centaurus/rebuild_setup.sh` | Runs delete then build setup. | Recreates local Centaurus Compose services. | Calls `delete_setup.sh` and `build_setup.sh`. |
+| `services/centaurus/rinstall.sh` | Performs a clean dependency reinstall for Centaurus. | Deletes `.venv`, recreates it, upgrades pip, and installs `requirements.txt`. | Use when the virtual environment is corrupted or dependency pins changed. |
+| `services/centaurus/runinstall.sh` | Ensures the virtual environment and dependencies are installed, then starts Centaurus through `run.sh`. | May create `.venv`, install requirements, and run Uvicorn via `run.sh`. | Forwards remaining arguments to `run.sh` after the logging flag is stripped. |
+| `services/centaurus/refreshinstall.sh` | Checks installed packages against `requirements.txt` and refreshes only when pip reports pending dependency changes. | May install or upgrade packages in `.venv`, then runs `pip check`. | Use after editing requirements or when tests show dependency drift. |
 | `services/centaurus/run.sh` | Creates/activates `.venv`, installs dependencies when needed, loads `.env` or defaults, configures Python env, then starts Uvicorn with reload. | Starts the local FastAPI server and may create `.venv`. | Accepts `KEY=VALUE` overrides; `-f` is stripped before override parsing. |
 | `services/centaurus/test.sh` | Creates/activates `.venv`, configures test env, then runs `ci-test.sh`. | Runs test suite and writes coverage artifacts. | Accepts `KEY=VALUE` overrides; `-f` is stripped before override parsing. |
 | `services/centaurus/ci-test.sh` | Runs pytest with coverage and moves reports to `/mnt/artifacts`. | Deletes `coverage/`, writes coverage reports, attempts to write `/mnt/artifacts`. | Used by CI and `test.sh`. |
