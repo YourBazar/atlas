@@ -26,3 +26,13 @@
 - Auth response parsing should be validated against backend response shape.
 - Role pages are currently content-heavy and not workflow dashboards.
 - CRA ecosystem is a long-term modernization risk.
+- Public home cards currently advertise `/community`, `/events`, and `/resources`, but those routes are not registered.
+- Primary CTAs are present without actions on the landing page and role pages.
+- The shared footer is fixed-position and can overlap pages that do not reserve bottom spacing.
+- Header mobile collapse accessibility needs id alignment.
+
+## Current UI Improvement Plan
+
+The current UI gap audit is recorded in `reports/CYGNUS_UI_GAP_AUDIT.md`.
+
+Implementation should start with navigation integrity and CTA behavior before broad visual redesign. Once the clickable paths are safe, the Frontend UX Agent should improve the app shell, auth states, onboarding states, and role dashboard entry screens.
