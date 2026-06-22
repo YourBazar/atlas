@@ -27,3 +27,78 @@ Verify whether Centaurus has existing APIs for assigning a signed-in user to a r
 - Coordinate request/response shapes with the Frontend UX Agent before Cygnus replaces the simulated join flow with a real API call.
 - Coordinate schema/model changes with the Data Model Agent if role membership is not already represented.
 - Record any new route, model, migration, or test details in Atlas.
+
+## Handoff
+
+**From:** Cygnus Principal Product Engineer Agent  
+**To:** Centaurus Backend Service Agent  
+**Topic:** Role-aware marketplace APIs for Cygnus  
+**Priority:** high
+
+### What I found
+
+Cygnus now has shared role onboarding and dashboard components for investor, partner, and provider paths. Because Centaurus does not yet expose confirmed user-role and marketplace opportunity APIs, Cygnus stores the selected role locally and labels opportunity data as preview content.
+
+### Evidence
+
+- Frontend role onboarding: `services/cygnus/src/component/RoleOnboarding.js`
+- Frontend role dashboard: `services/cygnus/src/component/RoleDashboard.js`
+- Frontend sample marketplace model: `services/cygnus/src/data/marketplace.js`
+- Detailed API gap: `services/atlas/Yourbazar/04_Features/cygnus-marketplace-frontend-api-gaps.md`
+
+### Frontend need
+
+Cygnus needs durable role persistence, current-user retrieval, and live opportunity data to replace local preview behavior.
+
+### Proposed backend change
+
+Implement the smallest safe Centaurus API set:
+
+- `GET /users/me`
+- `PATCH /users/me/role`
+- `GET /opportunities`
+- `GET /opportunities/{opportunity_id}`
+
+### Request shape
+
+```json
+{
+  "role": "investor"
+}
+```
+
+Allowed roles:
+
+- `investor`
+- `partner`
+- `provider`
+
+### Response shape
+
+```json
+{
+  "id": "user-id",
+  "email": "user@example.com",
+  "first_name": "Jay",
+  "role": "investor",
+  "onboarding_status": "complete"
+}
+```
+
+### Validation and errors
+
+- Require auth.
+- Reject unsupported roles.
+- Return consistent JSON error payloads.
+- Avoid leaking sensitive auth payloads in logs.
+
+### Tests needed
+
+- Role assignment success for all allowed roles.
+- Unsupported role rejection.
+- Unauthorized access rejection.
+- Opportunity list and detail smoke tests.
+
+### Suggested next step
+
+Inspect Centaurus user model/controller patterns, then add role persistence with the least disruptive schema change.
