@@ -439,3 +439,19 @@ The next best engineering moves are:
 5. Convert planned business setup flows into tests, API specs, backend routes, and frontend dashboards.
 
 Atlas should be updated whenever those decisions or implementations change.
+
+## L. AI Agent Organization
+
+Atlas now includes a formal AI-agent operating model under `Yourbazar/`. This layer defines the AI HR system for YourBazar: agent roster, ownership boundaries, communication protocol, task routing, MCP policy, operating modes, and reusable handoff artifacts.
+
+Primary entry points:
+
+| Path | Purpose |
+| --- | --- |
+| `Yourbazar/00_Overview/ai-operating-model.md` | Overall AI HR and multi-agent operating model |
+| `Yourbazar/06_Agents/agent-roster.md` | Current agent team and ownership map |
+| `Yourbazar/10_Artifacts/communication-protocol.md` | Required agent-to-agent communication format |
+| `Yourbazar/08_MCP/mcp-policy.md` | MCP creation policy and evaluation criteria |
+| `Yourbazar/10_Artifacts/execution-checklist.md` | Start/close checklist for major tasks |
+
+The agent model is documentation-first. No runtime behavior changes are implied by the agent roster. Agents are activated by task context and should preserve repository evidence, maintain Atlas, and hand off work through structured artifacts.

@@ -22,6 +22,13 @@ Read the full repository audit and implementation blueprint first:
 
 - `reports/YOURBAZAR_REPOSITORY_AUDIT_AND_ATLAS_BLUEPRINT.md`
 
+For AI-agent coordination, start here:
+
+- `Yourbazar/00_Overview/ai-operating-model.md`
+- `Yourbazar/06_Agents/agent-roster.md`
+- `Yourbazar/10_Artifacts/communication-protocol.md`
+- `Yourbazar/10_Artifacts/execution-checklist.md`
+
 ## Directory Map
 
 | Path | Purpose |
@@ -34,6 +41,7 @@ Read the full repository audit and implementation blueprint first:
 | `prompts/` | Prompts for future AI-agent work |
 | `reports/` | Large shareable audits and blueprints |
 | `templates/` | Reusable planning and handoff templates |
+| `Yourbazar/` | AI HR, multi-agent operating model, agent contexts, MCP policy, and coordination artifacts |
 
 ## Usage Rule
 
