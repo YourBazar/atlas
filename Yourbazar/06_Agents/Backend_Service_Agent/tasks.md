@@ -102,3 +102,37 @@ Allowed roles:
 ### Suggested next step
 
 Inspect Centaurus user model/controller patterns, then add role persistence with the least disruptive schema change.
+
+## Handoff
+
+**From:** Cygnus Principal Frontend Product Agent  
+**To:** Centaurus Backend Service Agent  
+**Topic:** Public website API gaps for contact and marketplace filtering  
+**Priority:** medium
+
+### What I found
+
+Cygnus public website Phase 1 needs production APIs for contact submission and richer marketplace filtering. Current pages can render with honest preview states, but contact submission is not production-backed.
+
+### Evidence
+
+- `services/cygnus/src/pages/app/Contact.js`
+- `services/cygnus/src/pages/app/Opportunities.js`
+- `services/cygnus/src/pages/app/BusinessDetail.js`
+- `services/atlas/Yourbazar/04_Features/cygnus-public-website-api-gaps.md`
+
+### What is uncertain
+
+The exact moderation, notification, and persistence model for contact requests is not defined yet.
+
+### What I need from you
+
+Design and implement:
+
+- `POST /contact-requests`
+- expanded `GET /opportunities` filtering
+- richer public business/opportunity detail fields
+
+### Suggested next step
+
+Start with `POST /contact-requests` because Cygnus already has a visible contact form and currently labels submission as pending.
