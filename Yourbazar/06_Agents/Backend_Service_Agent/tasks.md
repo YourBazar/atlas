@@ -136,3 +136,41 @@ Design and implement:
 ### Suggested next step
 
 Start with `POST /contact-requests` because Cygnus already has a visible contact form and currently labels submission as pending.
+
+## Handoff
+
+**From:** Cygnus Principal Frontend Product Agent  
+**To:** Centaurus Backend Service Agent  
+**Topic:** Protected workspace and admin API gaps for complete Cygnus frontend  
+**Priority:** high
+
+### What I found
+
+Cygnus now includes protected Investor, Partner, Provider, and Admin shells. These pages are complete enough for frontend navigation and testing, but several pages are explicitly preview-backed because Centaurus does not yet expose the role-specific workflow APIs.
+
+### Evidence
+
+- `services/cygnus/src/component/RoleWorkspacePage.js`
+- `services/cygnus/src/data/roleWorkspace.js`
+- `services/cygnus/src/pages/admin/AdminPage.js`
+- `services/cygnus/src/data/adminWorkspace.js`
+- `services/cygnus/src/pages/auth/AuthSupportPage.js`
+- `services/atlas/Yourbazar/04_Features/cygnus-public-website-api-gaps.md`
+
+### What is uncertain
+
+The backend authorization model for admin users is not confirmed. Cygnus currently protects `/admin/*` behind signed-in state only because role/permission claims are not yet defined.
+
+### What I need from you
+
+Design and implement the smallest safe API set for:
+
+- investor saved opportunities, portfolio, activity, and profile,
+- partner projects, applications, milestones, and profile,
+- provider requests, services, leads, quotes, and profile,
+- admin summary, users, opportunity moderation, provider moderation, and review queues,
+- auth password recovery and email verification.
+
+### Suggested next step
+
+Start with role-specific read APIs and admin authorization claims. Cygnus can then replace preview data route by route without changing the route structure.
