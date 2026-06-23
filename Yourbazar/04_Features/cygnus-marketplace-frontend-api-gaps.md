@@ -2,7 +2,7 @@
 
 ## Summary
 
-Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Opportunity detail pages can now submit role-specific marketplace actions to Centaurus. Dashboard counts, dedicated saved/application/request list UX, and activity feeds are still preview-oriented.
+Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Opportunity detail pages can submit role-specific marketplace actions to Centaurus. Dedicated investor saved, partner application, and provider lead pages now read live marketplace actions. Dashboard counts, action-rich opportunity summaries, status transitions, and activity feeds are still preview-oriented.
 
 ## Needed By
 
@@ -17,10 +17,13 @@ Cygnus now presents a role-aware marketplace frontend for investor, partner, and
   - `/opportunities/:opportunityId` action panel
   - `/investor`
   - `/investor/join`
+  - `/investor/saved`
   - `/partner`
   - `/partner/join`
+  - `/partner/applications`
   - `/provider`
   - `/provider/join`
+  - `/provider/leads`
 
 ## Current Frontend Behavior
 
@@ -39,6 +42,14 @@ Opportunity detail pages submit role-specific actions:
 - partner: `application`
 - provider: `provider_response`
 
+Dedicated action-backed workspace pages call `GET /users/me/marketplace-actions` with role and action filters:
+
+- `/investor/saved`: `role=investor&action_type=save`
+- `/partner/applications`: `role=partner&action_type=application`
+- `/provider/leads`: `role=provider&action_type=provider_response`
+
+These pages render live action status, note, role, opportunity identifier, and a link back to the opportunity detail. They show workflow guidance when the API is empty or unavailable.
+
 ## Missing Centaurus Capability
 
 Centaurus now supports:
@@ -52,12 +63,11 @@ Centaurus now supports:
 
 Remaining Centaurus capability gaps:
 
-1. Dedicated investor saved-opportunity list UX backed by `GET /users/me/marketplace-actions`.
-2. Dedicated partner application board UX backed by marketplace actions.
-3. Dedicated provider lead/request board UX backed by marketplace actions.
-4. Richer dashboard counters and activity data.
-5. Opportunity moderation/review workflows for admin.
-6. Domain-specific transitions beyond initial `submitted` status.
+1. Richer action responses that include opportunity title/category/location without extra frontend lookups.
+2. Live dashboard counters and activity data.
+3. Opportunity moderation/review workflows for admin.
+4. Domain-specific transitions beyond initial `submitted` status.
+5. Provider quote/request workflow beyond initial `provider_response`.
 
 ## Implemented Endpoints
 
@@ -184,7 +194,9 @@ Suggested response fields:
 - Opportunity detail returns 404 for unknown ID. Implemented in Centaurus tests.
 - Centaurus creates and lists marketplace actions, returns duplicate actions idempotently, and rejects unknown action types/opportunities. Implemented in Centaurus tests.
 - Cygnus opportunity detail submits signed-in investor/provider actions and renders success/error states. Implemented in Cygnus tests.
+- Cygnus investor saved page renders live saved actions from `GET /users/me/marketplace-actions?role=investor&action_type=save`. Implemented in Cygnus tests.
+- Cygnus provider leads page falls back to workflow guidance when marketplace actions are unavailable. Implemented in Cygnus tests.
 
 ## Priority
 
-High. Durable role persistence, live opportunity filtering, and initial role-specific action submission are now in place. Dedicated action list pages, dashboard counters, activity feeds, moderation, and provider service request workflow states remain the next blockers before the product can move beyond preview state.
+High. Durable role persistence, live opportunity filtering, role-specific action submission, and dedicated action list pages are now in place. Dashboard counters, richer action payloads, activity feeds, moderation, and provider service request workflow states remain the next blockers before the product can move beyond preview state.
