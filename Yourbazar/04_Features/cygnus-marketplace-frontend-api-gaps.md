@@ -2,7 +2,7 @@
 
 ## Summary
 
-Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details, but role choice is not exclusive: a user can act as investor, partner, or provider across different opportunities, and can hold multiple roles on the same opportunity through separate actions. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Opportunity detail pages can submit role-specific marketplace actions to Centaurus. Dedicated investor saved, partner application, and provider lead pages now read live marketplace actions with nested opportunity summaries. Role dashboards now consume live marketplace action counters when available. Status transitions and activity feeds are still preview-oriented.
+Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details, but role choice is not exclusive: a user can act as investor, partner, or provider across different opportunities, and can hold multiple roles on the same opportunity through separate actions. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Opportunity detail pages can submit role-specific marketplace actions to Centaurus. Dedicated investor saved, partner application, and provider lead pages now read live marketplace actions with nested opportunity summaries. Role dashboards now consume live marketplace action counters when available. Users can withdraw their own submitted marketplace actions from action-backed workspace cards. Activity feeds and admin moderation are still preview-oriented.
 
 ## Needed By
 
@@ -52,6 +52,12 @@ These pages render live action status, note, role, nested opportunity summary, a
 
 Role dashboards call `GET /users/me/marketplace-actions/summary?role=<role>` to replace preview counters with live action counts when Centaurus has user activity.
 
+Action-backed workspace cards call `PATCH /users/me/marketplace-actions/{action_id}/status` to withdraw a submitted action. Current user status updates are intentionally narrow:
+
+- allowed statuses: `submitted`, `withdrawn`
+- users can only update their own actions
+- admin review statuses are not part of this endpoint
+
 ## Missing Centaurus Capability
 
 Centaurus now supports:
@@ -63,6 +69,7 @@ Centaurus now supports:
 5. Role-specific marketplace actions through `POST /opportunities/{opportunity_identifier}/actions`.
 6. Current user's marketplace action list with nested opportunity summaries through `GET /users/me/marketplace-actions`.
 7. Current user's marketplace action summary through `GET /users/me/marketplace-actions/summary`.
+8. Current user's marketplace action status update through `PATCH /users/me/marketplace-actions/{action_identifier}/status`.
 
 Important role rule:
 
@@ -75,7 +82,7 @@ Remaining Centaurus capability gaps:
 
 1. Activity feed data derived from marketplace actions.
 2. Opportunity moderation/review workflows for admin.
-3. Domain-specific transitions beyond initial `submitted` status.
+3. Admin-owned review statuses beyond user-owned `submitted`/`withdrawn`.
 4. Provider quote/request workflow beyond initial `provider_response`.
 
 ## Implemented Endpoints
@@ -136,6 +143,7 @@ GET /opportunities/{opportunity_id}
 POST /opportunities/{opportunity_id}/actions
 GET /users/me/marketplace-actions
 GET /users/me/marketplace-actions/summary
+PATCH /users/me/marketplace-actions/{action_id}/status
 ```
 
 Current state:
@@ -146,6 +154,7 @@ Current state:
 - action persistence exists for `save`, `interest`, `application`, and `provider_response`.
 - action list responses include the nested opportunity summary needed by Cygnus workspace cards.
 - summary responses include total counts, counts by role, counts by action type, counts by status, and dashboard-ready metric items.
+- user-owned status updates support `submitted` and `withdrawn`.
 
 Implemented filters:
 
@@ -209,10 +218,12 @@ Suggested response fields:
 - Centaurus allows the same user to create investor and partner actions on the same opportunity. Implemented in Centaurus tests.
 - Centaurus marketplace action list includes nested opportunity summaries. Implemented in Centaurus tests.
 - Centaurus marketplace action summary returns total, role, action type, and status counts. Implemented in Centaurus tests.
+- Centaurus allows action owners to withdraw submitted actions and rejects invalid statuses/non-owner updates. Implemented in Centaurus tests.
 - Cygnus investor saved page renders live saved actions with nested opportunity details from `GET /users/me/marketplace-actions?role=investor&action_type=save`. Implemented in Cygnus tests.
 - Cygnus role dashboards load live marketplace action counters from `GET /users/me/marketplace-actions/summary?role=<role>`. Implemented in Cygnus tests.
+- Cygnus action-backed workspace cards can withdraw submitted actions. Implemented in Cygnus tests.
 - Cygnus provider leads page falls back to workflow guidance when marketplace actions are unavailable. Implemented in Cygnus tests.
 
 ## Priority
 
-High. Durable role persistence, live opportunity filtering, role-specific action submission, dedicated action list pages, enriched action payloads, and live dashboard counters are now in place. Activity feeds, moderation, status transitions, and provider service request workflow states remain the next blockers before the product can move beyond preview state.
+High. Durable role persistence, live opportunity filtering, role-specific action submission, dedicated action list pages, enriched action payloads, live dashboard counters, and user-owned withdrawal are now in place. Activity feeds, admin moderation, admin-owned review statuses, and provider service request workflow states remain the next blockers before the product can move beyond preview state.
