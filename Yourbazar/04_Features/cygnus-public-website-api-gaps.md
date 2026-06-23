@@ -53,7 +53,7 @@ Cygnus route:
 
 - `/contact`
 
-Needed endpoint:
+Implemented endpoint:
 
 ```http
 POST /contact-requests
@@ -70,13 +70,33 @@ Suggested request:
 }
 ```
 
-Suggested behavior:
+Implemented behavior:
 
 - validate email,
 - validate message length,
 - store request,
 - return request identifier,
 - avoid logging full message bodies in production logs.
+
+Implementation locations:
+
+- Centaurus model: `services/centaurus/app/models/models.py`
+- Centaurus serializer: `services/centaurus/app/serializers/contact_request_serializers.py`
+- Centaurus controller: `services/centaurus/app/controllers/contact_request_controller.py`
+- Centaurus handler: `services/centaurus/app/views/contact_request_handler.py`
+- Centaurus route registration: `services/centaurus/app/urls/urls.py`
+- Centaurus tests: `services/centaurus/tests/integrations/0008_test_contact_request_handlers/`
+- Cygnus form integration: `services/cygnus/src/pages/app/Contact.js`
+- Cygnus API URL: `services/cygnus/src/configs/Urls.js`
+- Cygnus tests: `services/cygnus/src/__tests__/App.test.js`
+- API contract: `services/ApiSpecs/centaurus.yaml`
+
+Remaining contact workflow work:
+
+- admin list/detail view for submitted contact requests,
+- status transitions beyond the default `new` status,
+- notification/routing rules for investor, partner, provider, and support topics,
+- assignment and audit history if multiple operators handle requests.
 
 ### Marketplace Filters
 

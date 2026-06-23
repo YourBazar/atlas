@@ -103,6 +103,38 @@ Allowed roles:
 
 Inspect Centaurus user model/controller patterns, then add role persistence with the least disruptive schema change.
 
+## Completed Task: Contact Request API
+
+**Owner:** Backend Service Agent  
+**Repository:** `services/centaurus`  
+**Completed with:** Cygnus Frontend UX Agent and ApiSpecs Documentation Agent
+
+### What changed
+
+Centaurus now exposes `POST /contact-requests` for the Cygnus `/contact` page. The endpoint validates the request payload, verifies the existing payload checksum header, stores the request, and returns a contact request identifier without echoing the full message body.
+
+### Evidence
+
+- Model: `services/centaurus/app/models/models.py`
+- Serializer: `services/centaurus/app/serializers/contact_request_serializers.py`
+- Controller: `services/centaurus/app/controllers/contact_request_controller.py`
+- Handler: `services/centaurus/app/views/contact_request_handler.py`
+- Route: `services/centaurus/app/urls/urls.py`
+- Tests: `services/centaurus/tests/integrations/0008_test_contact_request_handlers/`
+- Frontend integration: `services/cygnus/src/pages/app/Contact.js`
+- API contract: `services/ApiSpecs/centaurus.yaml`
+
+### Validation
+
+- Centaurus targeted contact request tests passed.
+- Full Centaurus `bash test.sh -f` passed with `94 passed, 9 skipped`.
+- Cygnus `bash test.sh -f` passed with `47 passed`.
+- Cygnus `npm run build` completed successfully.
+
+### Remaining follow-up
+
+Contact requests still need an authenticated admin/operator workflow for listing, assigning, status transitions, notifications, and audit history.
+
 ## Handoff
 
 **From:** Cygnus Principal Frontend Product Agent  
