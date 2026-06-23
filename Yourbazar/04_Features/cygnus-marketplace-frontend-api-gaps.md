@@ -2,7 +2,7 @@
 
 ## Summary
 
-Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details, but role choice is not exclusive: a user can act as investor, partner, or provider across different opportunities, and can hold multiple roles on the same opportunity through separate actions. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Opportunity detail pages can submit role-specific marketplace actions to Centaurus. Dedicated investor saved, partner application, and provider lead pages now read live marketplace actions with nested opportunity summaries. Role dashboards now consume live marketplace action counters when available. Users can withdraw their own submitted marketplace actions from action-backed workspace cards. Activity feeds and admin moderation are still preview-oriented.
+Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details, but role choice is not exclusive: a user can act as investor, partner, or provider across different opportunities, and can hold multiple roles on the same opportunity through separate actions. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Opportunity detail pages can submit role-specific marketplace actions to Centaurus. Dedicated investor saved, partner application, and provider lead pages now read live marketplace actions with nested opportunity summaries. Role dashboards now consume live marketplace action counters when available. Users can withdraw their own submitted marketplace actions from action-backed workspace cards. Role activity pages now derive timeline events from marketplace actions. Admin moderation is still preview-oriented.
 
 ## Needed By
 
@@ -18,12 +18,15 @@ Cygnus now presents a role-aware marketplace frontend for investor, partner, and
   - `/investor`
   - `/investor/join`
   - `/investor/saved`
+  - `/investor/activity`
   - `/partner`
   - `/partner/join`
   - `/partner/applications`
+  - `/partner/activity`
   - `/provider`
   - `/provider/join`
   - `/provider/leads`
+  - `/provider/activity`
 
 ## Current Frontend Behavior
 
@@ -58,6 +61,8 @@ Action-backed workspace cards call `PATCH /users/me/marketplace-actions/{action_
 - users can only update their own actions
 - admin review statuses are not part of this endpoint
 
+Role activity pages call `GET /users/me/marketplace-actions?role=<role>` and transform user-owned marketplace actions into timeline events. This covers near-term investor, partner, and provider activity without a separate event-stream endpoint. The pages keep role-specific planning activity as fallback content when Centaurus is empty or unavailable.
+
 ## Missing Centaurus Capability
 
 Centaurus now supports:
@@ -80,7 +85,7 @@ Important role rule:
 
 Remaining Centaurus capability gaps:
 
-1. Activity feed data derived from marketplace actions.
+1. Rich activity/audit event stream beyond marketplace action-derived timeline entries.
 2. Opportunity moderation/review workflows for admin.
 3. Admin-owned review statuses beyond user-owned `submitted`/`withdrawn`.
 4. Provider quote/request workflow beyond initial `provider_response`.
@@ -218,6 +223,7 @@ Suggested response fields:
 - Centaurus allows the same user to create investor and partner actions on the same opportunity. Implemented in Centaurus tests.
 - Centaurus marketplace action list includes nested opportunity summaries. Implemented in Centaurus tests.
 - Centaurus marketplace action summary returns total, role, action type, and status counts. Implemented in Centaurus tests.
+- Cygnus role activity pages render live marketplace actions as timeline events. Implemented in Cygnus tests.
 - Centaurus allows action owners to withdraw submitted actions and rejects invalid statuses/non-owner updates. Implemented in Centaurus tests.
 - Cygnus investor saved page renders live saved actions with nested opportunity details from `GET /users/me/marketplace-actions?role=investor&action_type=save`. Implemented in Cygnus tests.
 - Cygnus role dashboards load live marketplace action counters from `GET /users/me/marketplace-actions/summary?role=<role>`. Implemented in Cygnus tests.
