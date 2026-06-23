@@ -2,7 +2,7 @@
 
 ## Summary
 
-Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Dashboard counts and role-specific marketplace actions are still preview-oriented until Centaurus exposes save, application, provider request, and activity APIs.
+Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details. Public opportunity pages and role dashboards now prefer live Centaurus opportunity data and fall back to preview records when the API is empty or unavailable. Opportunity detail pages can now submit role-specific marketplace actions to Centaurus. Dashboard counts, dedicated saved/application/request list UX, and activity feeds are still preview-oriented.
 
 ## Needed By
 
@@ -14,6 +14,7 @@ Cygnus now presents a role-aware marketplace frontend for investor, partner, and
   - `/marketplace`
   - `/opportunities`
   - `/opportunities/:opportunityId`
+  - `/opportunities/:opportunityId` action panel
   - `/investor`
   - `/investor/join`
   - `/partner`
@@ -32,6 +33,12 @@ When `accessToken` and `userId` are available, `services/cygnus/src/component/Ro
 
 Dashboard opportunity cards call `GET /opportunities?role=<role>` and use sample marketplace previews only as fallback.
 
+Opportunity detail pages submit role-specific actions:
+
+- investor: `save`
+- partner: `application`
+- provider: `provider_response`
+
 ## Missing Centaurus Capability
 
 Centaurus now supports:
@@ -40,14 +47,17 @@ Centaurus now supports:
 2. Marketplace role assignment and retrieval through `PATCH /users/me/role`.
 3. Role onboarding status via user `meta`.
 4. Basic business-backed opportunity listing and detail through `GET /opportunities` and `GET /opportunities/{opportunity_identifier}`.
+5. Role-specific marketplace actions through `POST /opportunities/{opportunity_identifier}/actions`.
+6. Current user's marketplace action list through `GET /users/me/marketplace-actions`.
 
 Remaining Centaurus capability gaps:
 
-1. Investor save/interest action.
-2. Partner project/application action.
-3. Provider profile/service request action.
+1. Dedicated investor saved-opportunity list UX backed by `GET /users/me/marketplace-actions`.
+2. Dedicated partner application board UX backed by marketplace actions.
+3. Dedicated provider lead/request board UX backed by marketplace actions.
 4. Richer dashboard counters and activity data.
 5. Opportunity moderation/review workflows for admin.
+6. Domain-specific transitions beyond initial `submitted` status.
 
 ## Implemented Endpoints
 
@@ -104,6 +114,8 @@ Expected response:
 ```http
 GET /opportunities
 GET /opportunities/{opportunity_id}
+POST /opportunities/{opportunity_id}/actions
+GET /users/me/marketplace-actions
 ```
 
 Current state:
@@ -111,6 +123,7 @@ Current state:
 - basic list/detail exists and is backed by active `Businesses`,
 - list filters exist for role, category, location/city, status, and investment/capital range,
 - Cygnus consumes live list/detail responses and normalizes them into the frontend card shape.
+- action persistence exists for `save`, `interest`, `application`, and `provider_response`.
 
 Implemented filters:
 
@@ -169,7 +182,9 @@ Suggested response fields:
 - Cygnus opportunity detail renders live Centaurus detail with preview fallback. Implemented in Cygnus tests.
 - Cygnus role dashboards call role-scoped opportunity filters. Implemented in Cygnus tests.
 - Opportunity detail returns 404 for unknown ID. Implemented in Centaurus tests.
+- Centaurus creates and lists marketplace actions, returns duplicate actions idempotently, and rejects unknown action types/opportunities. Implemented in Centaurus tests.
+- Cygnus opportunity detail submits signed-in investor/provider actions and renders success/error states. Implemented in Cygnus tests.
 
 ## Priority
 
-High. Durable role persistence and live opportunity filtering are now in place. Role-specific actions, dashboard counters, activity feeds, moderation, and provider service request workflows remain the next blockers before the product can move beyond preview state.
+High. Durable role persistence, live opportunity filtering, and initial role-specific action submission are now in place. Dedicated action list pages, dashboard counters, activity feeds, moderation, and provider service request workflow states remain the next blockers before the product can move beyond preview state.
