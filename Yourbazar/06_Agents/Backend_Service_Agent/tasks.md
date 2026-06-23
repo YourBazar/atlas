@@ -28,6 +28,38 @@ Verify whether Centaurus has existing APIs for assigning a signed-in user to a r
 - Coordinate schema/model changes with the Data Model Agent if role membership is not already represented.
 - Record any new route, model, migration, or test details in Atlas.
 
+## Completion Update: Centaurus Role Onboarding API Gap
+
+**Status:** implemented and validated
+
+Centaurus exposes the smallest safe role onboarding API surface:
+
+- `GET /users/me`
+- `PATCH /users/me/role`
+- `GET /opportunities`
+- `GET /opportunities/{opportunity_identifier}`
+
+The role is persisted in `User.meta` using:
+
+- `marketplace_role`
+- `onboarding_status`
+
+No schema migration is required because `meta` already exists on `CentaurusModel`.
+
+### Validation
+
+- Expanded Centaurus tests cover all allowed roles, signin hydration, invalid checksum rejection, unsupported role rejection, and basic opportunity list/detail.
+- Cygnus has a regression test proving authenticated role onboarding calls Centaurus and stores returned `onboarding_status`.
+- ApiSpecs documents current user, role update, and opportunity list/detail contracts.
+
+### Remaining backend work
+
+- Add opportunity filters by role, category, city/location, status, and investment range.
+- Add investor save/interest actions.
+- Add partner application/project actions.
+- Add provider request/service actions.
+- Add admin/operator APIs for moderation and workflow control.
+
 ## Handoff
 
 **From:** Cygnus Principal Product Engineer Agent  

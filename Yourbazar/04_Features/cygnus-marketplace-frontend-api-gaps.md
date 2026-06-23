@@ -2,7 +2,7 @@
 
 ## Summary
 
-Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. The UI is intentionally honest about unavailable backend capabilities: marketplace cards and dashboard counts are marked as previews until Centaurus exposes real role, opportunity, and service APIs.
+Cygnus now presents a role-aware marketplace frontend for investor, partner, and provider paths. Role persistence is backed by Centaurus when an authenticated session has token details. Marketplace cards and dashboard counts are still marked as previews until Centaurus exposes richer opportunity filtering and role-specific action APIs.
 
 ## Needed By
 
@@ -19,26 +19,33 @@ Cygnus now presents a role-aware marketplace frontend for investor, partner, and
 
 ## Current Frontend Behavior
 
-Cygnus stores selected role and onboarding status in browser local storage:
+Cygnus stores selected role and onboarding status in browser local storage for session hydration:
 
 - `marketplaceRole`
-- `onboardingStatus=local-preview`
+- `onboardingStatus`
 
-Dashboard opportunity cards are sample marketplace previews, not live production data.
+When `accessToken` and `userId` are available, `services/cygnus/src/component/RoleOnboarding.js` calls `PATCH /users/me/role` and stores the returned `role` and `onboarding_status`.
+
+Dashboard opportunity cards are still sample marketplace previews, not live production data.
 
 ## Missing Centaurus Capability
 
-Centaurus needs durable APIs for:
+Centaurus now supports:
 
-1. Current signed-in user/session profile.
-2. Marketplace role assignment and retrieval.
-3. Role onboarding status.
-4. Business/opportunity listing and detail.
-5. Investor save/interest action.
-6. Partner project/application action.
-7. Provider profile/service request action.
+1. Current signed-in user/session profile through `GET /users/me`.
+2. Marketplace role assignment and retrieval through `PATCH /users/me/role`.
+3. Role onboarding status via user `meta`.
+4. Basic business-backed opportunity listing and detail through `GET /opportunities` and `GET /opportunities/{opportunity_identifier}`.
 
-## Proposed Endpoints
+Remaining Centaurus capability gaps:
+
+1. Opportunity filtering by role, category, city/location, status, and investment range.
+2. Investor save/interest action.
+3. Partner project/application action.
+4. Provider profile/service request action.
+5. Richer dashboard counters and activity data.
+
+## Implemented Endpoints
 
 ### Current User
 
@@ -95,6 +102,11 @@ GET /opportunities
 GET /opportunities/{opportunity_id}
 ```
 
+Current state:
+
+- basic list/detail exists and is backed by active `Businesses`,
+- richer filters are still pending.
+
 Suggested filters:
 
 - `role`
@@ -137,13 +149,15 @@ Suggested response fields:
 
 ## Test Scenarios
 
-- Signed-in user can assign each allowed role.
-- Signed-in user can retrieve role after assignment.
-- Unknown role is rejected.
-- Unauthenticated user cannot assign role.
-- Opportunity list supports role filtering.
-- Opportunity detail returns 404 for unknown ID.
+- Signed-in user can assign each allowed role. Implemented in Centaurus tests.
+- Signed-in user can retrieve role after assignment. Implemented in Centaurus tests.
+- Signin returns persisted role and onboarding status. Implemented in Centaurus tests.
+- Unknown role is rejected. Implemented in Centaurus tests.
+- Invalid role payload checksum is rejected. Implemented in Centaurus tests.
+- Cygnus authenticated onboarding calls Centaurus and stores returned role status. Implemented in Cygnus tests.
+- Opportunity list supports role filtering. Pending.
+- Opportunity detail returns 404 for unknown ID. Pending.
 
 ## Priority
 
-High. Cygnus can now provide a usable frontend shell, but durable role persistence and live opportunity data require Centaurus support before the product can move beyond preview state.
+High. Durable role persistence is now in place. Live opportunity filtering, role-specific actions, and dashboard data remain the next blockers before the product can move beyond preview state.
